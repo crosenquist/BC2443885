@@ -23,7 +23,7 @@ void bubSort(int, int*);      //Bubble Sort
 void xorSwap(int&,int&);      //Exclusive Or Swap for Bubble Sort
 
 //Functions associated with getting information about the mode
-void mode(int*,int);          //Outputs Mode Information to Console
+void modeOut(int*,int);       //Outputs Mode Information to Console
 int* count(const int*,int);   //Generates an array for frequency
 int freq(int*,int);           //Returns the highest frequency
 int numMode(int*,int);        //Returns the Number of Modes
@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
     cout<<endl<<"Median:  "<<median(a,SIZE);
     
     //Return Mode
-    mode(a,SIZE);
+    modeOut(a,SIZE);
         
     //End
     cout<<endl<<"Program Terminating..."<<endl;
@@ -89,10 +89,14 @@ int* mode(int *b,int s,int modes){
     int high = freq(b,s);
     
     //Create an Array with 'modes' elements
-    int* c = new int[modes];
+    int* c = new int[modes+2];
+    
+    //Populate the first two elements of c with number of modes and frequency
+    c[0] = modes;
+    c[1] = high;
     
     //Fill array with modes
-    for(int j=0;j<modes;j++){
+    for(int j=2;j<modes+2;j++){
         for(int i=0;i<s;i++){
             if(b[i]==high){
                 c[j]=i;
@@ -139,8 +143,8 @@ void xorSwap(int& a, int& b){
 
 //Functions for Finding Mode(s)
 int* count(const int* a, int s){
-    int* count = new int[s];
-    for(int i=10;i<99;i++){
+    int* count = new int[s+1];
+    for(int i=10;i<100;i++){
         //Reset Counter
         int c=0;
         for(int j=0;j<s;j++){
@@ -154,26 +158,26 @@ int* count(const int* a, int s){
     }
     return count;
 }
-void mode(int* a,int s){
+void modeOut(int* a,int s){
     //Generate a counter array
-    int* b = new int[s];
+    int* b = new int[s+1];
     b = count(a,s);
     cout<<endl;
     
     //Find Number of modes
-    int num = mode(b,s);
+    int num = numMode(b,s);
     
     //Create Mode Array
     int *d;
     d = mode(b,s,num);
     
-    //Declare Mode
+    //Output Modes
     cout<<"Mode :  {";
-    for(int i=0;i<num;i++){
-        if(i==0)
+    for(int i=2;i<num+2;i++){
+        if(i==2)
             cout<<d[i];
         else
-            cout<<", "<<d[i];
+            cout<<","<<d[i];
     }
     cout<<"}"<<endl;
     
@@ -190,7 +194,7 @@ int freq(int* b,int s){
     }
     return high;
 }
-int mode(int *b,int s){
+int numMode(int *b,int s){
     //Find Highest Frequency
     int high = freq(b,s);
     
