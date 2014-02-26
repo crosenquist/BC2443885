@@ -9,7 +9,7 @@ Instructor    :   Dr. Mark Lehr
 
 Purpose:  
 
-	CSC-7   - To keep track of progress in programs regarding discrete math such as logic and proofs
+	CSC-7   - To keep track of progress with discrete math such as logic and proofs
 	
 	CSC-17A - To keep track of Object Oriented learning of C++
 
