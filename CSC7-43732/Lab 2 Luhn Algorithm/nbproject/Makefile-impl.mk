@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=Lab 2 Luhn Algorithm
+PROJECTNAME=lab 2 luhn algorithm
 
 # Active Configuration
 DEFAULTCONF=Debug
