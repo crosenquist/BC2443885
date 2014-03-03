@@ -7,7 +7,6 @@
 //Libraries
 #include <cstdlib>
 #include <iostream>
-#include <cmath>
 
 using namespace std;
 
@@ -15,23 +14,53 @@ using namespace std;
 enum CrdCard{AMEX, VISA, MASTER, DISC, ALL};  //Required to declare here to use in functions
 
 //Functions
-char* genCC(CrdCard);
-char* genVisa();
-char* genMstr();
-char* genDisc();
-char* genAmex();
+char* genCC(CrdCard,int&);
+char* genVisa(int&);
+char* genMstr(int&);
+char* genDisc(int&);
+char* genAmex(int&);
 char* genNum(int,int);
 char getLuhn(char[],int); 
-void prntCard(char[],int); 
+void prntCard(char[],int);
+bool chkLuhn(char*,int);
 
 int main(int argc, char** argv) {
-    srand(time(0));
-    int length;
-    char* card = genCC(MASTER);
+    //Declare
+    srand(time(0));           //Seed Random
+    CrdCard testCard;         //Used to generate a random card type
+    const int TEST = 10000;   //Change number of tests easily
+    int fail = 0;             //Counter for the number of caught credit errors
+    bool valid;               //Will return true if luhn check passes
+    int length;               //Will store credit card length
+    char *card;               //Will store the credit card pointer
+    
+    //Run Tests
+    for(int i=0;i<TEST;i++){
+        //Reset
+        valid = true;
+        length = 0;
+        testCard = static_cast<CrdCard>(rand()% ALL);
+        
+        //Generate a random credit card
+        card = genCC(testCard,length);
+        
+        //Flip a digit
+        card[rand()%length] = rand()%10+'0';
+        
+        //Perform a Luhn Check to see if CC is still valid
+        valid = chkLuhn(card,length);
+        
+        //If it doesn't pass then increment fail counter
+        if(!valid)fail++;
+    }
+    
+    cout<<"Out of "<<TEST<<" tests of digit flipping Luhn Algorithm caught "
+        <<static_cast<float>(fail)/static_cast<float>(TEST)*100.0<<"% of them."<<endl;
+    
     return 0;
 }
 
-char* genCC(CrdCard c){
+char* genCC(CrdCard c, int &length){
     /*Information for CCs obtained from http://en.wikipedia.org/wiki/Bank_card_number
      *| Type    |  Prefix                          |  Lengths     
      *| Visa    |    4                             |  13,16
@@ -40,20 +69,19 @@ char* genCC(CrdCard c){
      *| Amex    |  34,37                           |  15
      */
     if(c==VISA)
-        return genVisa();
+        return genVisa(length);
     else if(c==MASTER)
-        return genMstr();
+        return genMstr(length);
     else if(c==DISC)
-        return genDisc();
+        return genDisc(length);
     else if(c==AMEX)
-        return genAmex();
+        return genAmex(length);
    
 }
-char* genVisa(){
+char* genVisa(int &length){
     //Declare Variables
     int foo;
     int prefix;
-    int length;
     //Find Length
     foo = rand()%2;
     if(foo) length=16;
@@ -62,27 +90,29 @@ char* genVisa(){
     //Find Prefix
     prefix=4;
     
+    cout<<"Visa:              ";
+    
     return genNum(length,prefix);
 }
-char* genMstr(){
+char* genMstr(int &length){
     //Declare Variables
     int foo;
     int prefix;
-    int length;
     //Find Length
     length=16;
     
     //Find Prefix
     foo = rand()%6+50;
     prefix=foo;
+    
+    cout<<"Mastercard:        ";
 
     return genNum(length,prefix);
 }
-char* genDisc(){
+char* genDisc(int &length){
  //Declare Variables
     int foo;
     int prefix;
-    int length;
  //Find Length
     length=16;
     
@@ -101,13 +131,14 @@ char* genDisc(){
         prefix = (prefix*10)+foo;
     }
     
+    cout<<"Discover:          ";
+    
     return genNum(length,prefix);
 }
-char* genAmex(){
+char* genAmex(int &length){
     //Declare Variables
     int foo;
     int prefix;
-    int length;
     //Find Length
     length=15;
     
@@ -116,6 +147,8 @@ char* genAmex(){
     if(foo)prefix=34;
     else prefix=37;
     
+    cout<<"American Express:  ";
+    
     return genNum(length,prefix);
 }
 char* genNum(int length, int prefix){
@@ -123,12 +156,12 @@ char* genNum(int length, int prefix){
     char num[length];
     int digit;
   //Get the size of the prefix-1
-    if(prefix/1000)digit=3;
-    else if(prefix/100)digit=2;
-    else if(prefix/10)digit=1;
-    else digit=0;
+    if(prefix>=1000)digit=4;
+    else if(prefix>=100)digit=3;
+    else if(prefix>=10)digit=2;
+    else digit=1;
   //Store the prefix as the first digits of char array
-    for(int i=digit;i>=0;i--){
+    for(int i=digit-1;i>=0;i--){
         num[i]=prefix%10+'0';
         prefix/=10;
     }
@@ -139,6 +172,7 @@ char* genNum(int length, int prefix){
     num[length-1] = getLuhn(num,length);
     
     prntCard(num,length);
+    cout<<endl;
     
   //Return the array
     return num;
@@ -173,7 +207,13 @@ char getLuhn(char *num, int length){
     }
     return (sum*9)%10+'0';
 }
-void prntCard(char *num,int length){
+void prntCard(char *num, int length){
     for(int i=0;i<length;i++)
         cout<<num[i];
 } 
+bool chkLuhn(char* card, int length){
+    if(getLuhn(card,length)==card[length-1])
+        return true;
+    else
+        return false;
+}
